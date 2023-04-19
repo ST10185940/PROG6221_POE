@@ -1,7 +1,7 @@
 # PROG6221_POE
 Console Application in C#
 
-HOW TO RUN AND COMPILE 
+HOW TO RUN AND COMPILE :
 
 In Visual Studio,  run the C# file by compiling and executing it using the following steps:
 
@@ -13,7 +13,7 @@ Press Ctrl+F5 or select "Start Without Debugging" from the "Debug" menu to compi
 
 
 
-ALTERNATIVELY 
+ALTERNATIVELY :
 
 You can open a terminal window in VS Code and navigate to project directory or directory containg project.
 
