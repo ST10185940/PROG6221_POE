@@ -4,7 +4,7 @@ namespace PoePt1{
 
     public class RecipeRun{ //class to run program
 
-        public void main (string [] args){ 
+        public static void Main(string [] args){ 
             //main method to run program
             Console.WriteLine("Sanele Cooks (Beta)");
            
@@ -26,29 +26,23 @@ namespace PoePt1{
     public class Recipe{ //class to store recipe information
         
         //class variables
-        private string name;
-        public string Name{
-            get{return name;}
-            set{
-                if (string.IsNullOrEmpty(value)){
-                    throw new ArgumentException("Name cannot be null or empty");
-                }
-                name=value;
-            }
-        }
+        private string? name = null;
         private  static int numIngredients{get;set;}
         private int steps{get;set;}
-        private string [] ingredientName = new string[numIngredients];
+        private string? [] ingredientName = new string[numIngredients];
         private  static double [] quantity = new double[numIngredients];
         private string [] quantityUnit = new string[numIngredients];
-        private string [] stepInfo = new string[numIngredients];   
+        private string? [] stepInfo = new string[numIngredients]; 
+     
         List<double> defaultValues = new List<double>(); //list to store default values of quantity
         
 
         private void entryPrimary(){ //method to capture recipe name , number of ingredients and steps
             try{  //try catch block to handle exceptions
                 Console.WriteLine("Enter the name of the recipe");
-                name = Console.ReadLine(); 
+                Console.ReadLine();
+                if(Console.ReadLine() != null){ name = Console.ReadLine();}
+                else throw new IOException(); //check if user has entered values                
                 Console.WriteLine($"Enter the number of ingredients for the {name}");
                 numIngredients = Convert.ToInt32(Console.ReadLine());
                 Console.WriteLine($"How many steps are invovled in making the {name}");
@@ -67,15 +61,17 @@ namespace PoePt1{
             for( int s = 0 ; s < steps; s++){  //loop to capture step information
             do {
                 Console.WriteLine($"Describe step{s}");
-                stepInfo[s] = Console.ReadLine();
-                if (stepInfo[s].Equals(null))
+                Console.ReadLine();
+                if(Console.ReadLine() != null){ stepInfo[s] = Console.ReadLine();}
+                else throw new IOException(); //check if user has entered values    
+                if (stepInfo[s] == null)
                 {
                     Console.BackgroundColor = ConsoleColor.Yellow;
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("*Enter values to proceed");
+                    Console.WriteLine("*Step description cannot be empty");
                     Console.ResetColor();
                 }
-            }while(stepInfo[s].Equals(null));
+            }while(stepInfo[s] == null);
           }
         }
         private void entrySecondary(){  //method to capture ingredient information
@@ -84,14 +80,18 @@ namespace PoePt1{
                 try {
                     do{ //loop to capture ingredient information
                         Console.WriteLine($"Enter the name of ingredient {i}");
-                        ingredientName[i] = Console.ReadLine();
-                        
+                        Console.ReadLine();
+                        if(Console.ReadLine() != null){ ingredientName[i] = Console.ReadLine();}
+                        else throw new IOException(); //check if user has entered values    
+                     
                         Console.WriteLine($"Enter the quantity of {ingredientName[i]}s");
                         quantity[i] = Convert.ToInt32(Console.ReadLine());
 
                         Console.WriteLine($"How will the {ingredientName}s be measured , Example 'gram's','kg', 'teaspoons','tablespoons', 'cups' or 'liters'");
-                        quantityUnit[i] = Console.ReadLine().ToLower();
-                          
+                        Console.ReadLine();
+                        if(Console.ReadLine() != null){ quantityUnit[i] = Console.ReadLine().ToLower();}
+                        else throw new IOException(); 
+                              
                         if(ingredientName[i] == null || quantity[i] <= 0 || quantityUnit[i] == null ){ //check if user has entered values
                             Console.BackgroundColor = ConsoleColor.Yellow;
                             Console.ForegroundColor = ConsoleColor.Red;
@@ -164,7 +164,7 @@ namespace PoePt1{
         }
 
         private void Delete(){  //method to delete recipe 
-        string check = "no";
+         string? check = "no";
             //Ask user to confirm before deleting
             try{
                 Console.ForegroundColor = ConsoleColor.Green;
@@ -212,7 +212,7 @@ namespace PoePt1{
         private void Scale(){ //method to scale recipe
          double scale; //variable to store scale factor
          int back;      
-         string check; 
+         string? check = null;
             try{ 
                 do{  //loop to ensure user enters a valid scale factor
                     Console.WriteLine($"At what scale would you like to alter recipe quantities");
@@ -221,10 +221,10 @@ namespace PoePt1{
                     Console.WriteLine($"Are you sure you would like to scale the recipe ingredients by a factor of {scale} ,type 'yes' or 'no' to confirm");
                     Console.ResetColor();
                     check = Console.ReadLine().ToLower();
-                    if ((scale <= 0) || check.Equals(null)){ //if user enters a scale factor less than 0 or enters no , return to menu
+                    if ((scale <= 0) || check == null){ //if user enters a scale factor less than 0 or enters no , return to menu
                     Console.WriteLine("please enter a number greater than 0 or type yes or no where required");
                     }
-                }while((scale <= 0) || check.Equals(null)); //loop until user enters a valid scale factor and confirmation
+                }while((scale <= 0) || (check == null)); //loop until user enters a valid scale factor and confirmation
 
                 if (check.Contains("yes")){  //if user confirms scaling
                     for (int i = 0 ; i < numIngredients ; i++){ //loop to mulitply each quantity by the scale factor
@@ -262,12 +262,12 @@ namespace PoePt1{
         }
 
         private void Reset(){ //method to reset recipe values
-        string check = "no"; // check value with default set to "no" to ensure user does not reset values by mistake
+         string? check = "no"; // check value with default set to "no" to ensure user does not reset values by mistake
             try{
                 do{
                 Console.WriteLine("Are your sure you want to reset ingredient quantity values");
                 check = Console.ReadLine().ToLower();  
-            if(check.Contains("yes")){ //if user confirms reset assigns values from defaultValues array to quantity array
+                if(check.Contains("yes")){ //if user confirms reset assigns values from defaultValues array to quantity array
                 for (int d = 0 ; d < numIngredients ; d++){
                     quantity[d] = defaultValues[d];
                 }
@@ -275,7 +275,7 @@ namespace PoePt1{
                 else if (check.Contains("no")) //if user does not confirm reset returns to menu
                  Console.WriteLine("Values have not been reset, what else would you like to do");
                     menu();
-            }while(check != null);
+            }while(check == null);
             }catch(IOException){ //catches exception if user enters wrong input and ensure user is able to try again
                 Console.WriteLine( "Please enter 'yes' or 'no'");
                 Reset();
