@@ -17,6 +17,9 @@ namespace PoePt1{
             }  catch(FormatException){
                Console.WriteLine("Please enter an integer to proceed");
                 recipe.menu();
+            }catch(OverflowException){
+                Console.WriteLine("Please enter an integer to proceed");
+                recipe.menu();
             }
         }
 
@@ -26,7 +29,7 @@ namespace PoePt1{
     public class Recipe{ //class to store recipe information
         
         //class variables
-        private string? name = null;
+        private string? name{get;set;}
         private  static int numIngredients{get;set;}
         private int steps{get;set;}
         private string? [] ingredientName = new string[numIngredients];
@@ -40,9 +43,8 @@ namespace PoePt1{
         private void entryPrimary(){ //method to capture recipe name , number of ingredients and steps
             try{  //try catch block to handle exceptions
                 Console.WriteLine("Enter the name of the recipe");
-                Console.ReadLine();
-                if(Console.ReadLine() != null){ name = Console.ReadLine();}
-                else throw new IOException(); //check if user has entered values                
+                name = Console.ReadLine();
+                if(Console.ReadLine() == null){throw new IOException();}   //check if user has entered values 
                 Console.WriteLine($"Enter the number of ingredients for the {name}");
                 numIngredients = Convert.ToInt32(Console.ReadLine());
                 Console.WriteLine($"How many steps are invovled in making the {name}");
@@ -56,23 +58,34 @@ namespace PoePt1{
             }catch(FormatException){
                 Console.WriteLine("An error on our side occured , please try again");
                 entryPrimary(); //call method again if exception is caught
+            }catch(OutOfMemoryException){
+                Console.WriteLine("An error on our side occured , please try again");
+                entryPrimary(); //call method again if exception is caught
+            }catch(ArgumentOutOfRangeException){
+                Console.WriteLine("An error on our side occured , please try again");
+                entryPrimary(); //call method again if exception is caught
             }
             
-            for( int s = 0 ; s < steps; s++){  //loop to capture step information
-            do {
-                Console.WriteLine($"Describe step{s}");
-                Console.ReadLine();
-                if(Console.ReadLine() != null){ stepInfo[s] = Console.ReadLine();}
-                else throw new IOException(); //check if user has entered values    
-                if (stepInfo[s] == null)
-                {
-                    Console.BackgroundColor = ConsoleColor.Yellow;
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("*Step description cannot be empty");
-                    Console.ResetColor();
-                }
-            }while(stepInfo[s] == null);
+            for( int s = 1 ; s <= steps; s++){  //loop to capture step information
+            try{ //try catch block to handle exceptions
+                do {
+                    Console.WriteLine($"Describe step {s}");
+                    stepInfo[s] = Console.ReadLine();
+                     
+                    if (stepInfo[s] == null)
+                    {
+                        Console.BackgroundColor = ConsoleColor.Yellow;
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("*Step description cannot be empty");
+                        Console.ResetColor();
+                    }
+                }while(stepInfo[s] == null); //check if user has entered values 
+            }catch(IndexOutOfRangeException){
+                Console.WriteLine("An error on our side occured , please try again");
+                menu(); //return user to menu if exception is caught
+            }
           }
+          entrySecondary(); //call method to capture ingredient information
         }
         private void entrySecondary(){  //method to capture ingredient information
 
@@ -88,10 +101,8 @@ namespace PoePt1{
                         quantity[i] = Convert.ToInt32(Console.ReadLine());
 
                         Console.WriteLine($"How will the {ingredientName}s be measured , Example 'gram's','kg', 'teaspoons','tablespoons', 'cups' or 'liters'");
-                        Console.ReadLine();
-                        if(Console.ReadLine() != null){ quantityUnit[i] = Console.ReadLine().ToLower();}
-                        else throw new IOException(); 
-                              
+                        quantityUnit[i] = Console.ReadLine().ToLower();
+                      
                         if(ingredientName[i] == null || quantity[i] <= 0 || quantityUnit[i] == null ){ //check if user has entered values
                             Console.BackgroundColor = ConsoleColor.Yellow;
                             Console.ForegroundColor = ConsoleColor.Red;
@@ -312,28 +323,28 @@ namespace PoePt1{
         }
 
          public void menu(){    //method to display menu
+            int option;
             Console.WriteLine(" ");
             Console.WriteLine("Main Menu:");
             Console.WriteLine(" ");
             Console.WriteLine("please select on option to proceed");
-            int option = Convert.ToInt32(Console.ReadLine());
+            
             do {   //numeric menu as entry point for program
-                Console.BackgroundColor = ConsoleColor.Blue;
-                Console.ForegroundColor = ConsoleColor.Black;
+                Console.BackgroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.DarkBlue;
                 Console.WriteLine("1. Enter a recipe");
-                Console.WriteLine("2. Scale entered recipe ingredient quantities ");
-                Console.WriteLine("3. Reset to defualt");
-                Console.WriteLine("4. View recipe");
+                Console.WriteLine("2. Scale a recpie ");
+                Console.WriteLine("3. Reset recipe quantities");
+                Console.WriteLine("4. View entered recipe");
                 Console.WriteLine("5. Delete recipe");
                 Console.WriteLine("6. Exit");
                 Console.ResetColor();
-                
+                 option = Convert.ToInt32(Console.ReadLine());
             switch(option) //switch statement to allow user to select option
             {
                 
                 case 1:   //calls methods to enter recipe and format quantities accordingly 
                     entryPrimary();
-                    entrySecondary();
                     defaultValues.AddRange(quantity); //adds values from quantity array to defaultValues array
                     Format();  //calls method to format quantity units of measurements
                     break;                  
@@ -343,6 +354,7 @@ namespace PoePt1{
                     break;                            
                 case 3:  //calls method to reset recipe
                     Reset(); 
+                    Format();
                     break;
                 case 4:  // calls method to view recipe
                     View();
