@@ -141,7 +141,7 @@ namespace PoePt1{
                 //converts between teaspoons and tablespoons
                 else if (quantity[i] >= 3 && quantityUnit[i].Contains("teaspoons")){
                     quantity[i] = quantity[i]/3;
-                    quantityUnit[i] = "tablespoon(s)";
+                    quantityUnit[i] = "tablespoons";
                 }
                 else if( quantity[i] < 1 && quantityUnit[i].Contains("tablespoons")){
                     quantity[i] = quantity[i]*3;
@@ -170,7 +170,7 @@ namespace PoePt1{
             } 
            }catch(IndexOutOfRangeException){ 
                 Console.WriteLine("An error occured, please make sure you have entered a recipe first");
-                menu();
+                Format(); //recursive call to method if exception is caught
            }
         }
 
@@ -339,7 +339,7 @@ namespace PoePt1{
                 Console.WriteLine("5. Delete recipe");
                 Console.WriteLine("6. Exit");
                 Console.ResetColor();
-                 option = Convert.ToInt32(Console.ReadLine());
+                option = Convert.ToInt32(Console.ReadLine());
             switch(option) //switch statement to allow user to select option
             {
                 
