@@ -110,7 +110,6 @@ namespace PoePt1
         }
     }
 
-
     public class Recipe
     { //class to store recipe information
 
@@ -245,7 +244,7 @@ namespace PoePt1
                 }
             }
             Console.WriteLine($" A recipe for the {name} has been created. As Malema once said ''We are cruising nicely '' "); //confirmation message
-            addcalories();  
+            addcalories(someCalories);  
         }
 
         private void Format()
@@ -313,11 +312,11 @@ namespace PoePt1
            
         }
 
-        private void addcalories()
+        private void addcalories( List <double> someCalories)
         {
+            calories.AddRange(someCalories);
             calories.ForEach(c => totalcal += c);
         }
-
 
         private void Delete()
         {  //method to delete recipe 
@@ -562,6 +561,24 @@ namespace PoePt1
                         break;
                 }
             } while (option <= 6); //loop to ensure user is returned to menu after each operation
+        }
+    }
+
+    public class MyUnitTest{
+        public void testCalorieCalculation(){
+            //Arranges preconditions and inputs for the  test by creating  a recipe objec and defining the initial state of a list of calories 
+            var aRecipe = new Recipe();
+             aRecipe.calories.Add(23423.423);
+             aRecipe.calories.Add(2342);
+             aRecipe.calories.Add(423);
+             aRecipe.calories.Add(423);
+             aRecipe.calories.Add(2342);
+            var someCalories = new List<double>(aRecipe.calories);
+
+            double testResult = CalculateTotalSum(someCalories);
+            double totalCalories = aRecipe.addcalories(someCalories);
+
+            Assert.AreEqual(testResult,totalCalories);
         }
     }
 }
